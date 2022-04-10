@@ -9,6 +9,7 @@ Optional second parameter can be the output file's name.
 If 2nd param is not specified, output will go to "new_<1stParam>".
 """
 
+import os
 import sys
 
 MAX = 70
@@ -71,7 +72,9 @@ args = sys.argv
 arglen = len(args)
 infile = args[1]
 if arglen > 2: dest_file = args[2]
-else: dest_file = "new_{}".format(infile)
+else:
+    root, fname = os.path.split(infile)
+    dest_file = os.path.join(root, "new_{}".format(fname))
 with open(infile, 'r') as source:
     with open(dest_file, 'w') as dest:
         for line in source:
