@@ -5,11 +5,12 @@
 """
 Provides a function <heights>
 =============================
-Given two locations D units apart, each of specified height h0 & h1
+Given two locations d units apart, each of specified height h0 & h1
 and given the need to segment the intervening distance into n parts
 we want to know the height of each of the n - 1 locations.
+<d> must be an integer.  <h0> and <h1> can be integer or float.
 
-In the following example we have D = 7, h1 = 4, h2 = 11:
+In the following example we have d = 7, h2 = 4, h1 = 11:
 
      #
      #     |     
@@ -49,11 +50,19 @@ def heights(d, h0, h1):
     dh = (h1 - h0) / d
     return [(h0 + dh * n) for n in range(d+1)]
 
-for key in problem_d.keys():
-    print()
-    print("    For {d} intervals and heights {h0} & {h1}:"
-            .format(**problem_d[key]))
-    print("      " + repr(heights(problem_d[key]['d'],
-                              problem_d[key]['h0'],
-                              problem_d[key]['h1'])))
-print()
+
+def main():
+    res = ['',]
+    for key in problem_d.keys():
+        res.append("    For {d} intervals and heights {h0} & {h1}:"
+                .format(**problem_d[key]))
+        res.append("      " + repr(heights(problem_d[key]['d'],
+                                  problem_d[key]['h0'],
+                                  problem_d[key]['h1'])))
+        res.append('')
+    print('\n'.join(res))
+
+
+if __name__ == "__main__":
+    main()
+
