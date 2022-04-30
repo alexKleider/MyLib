@@ -1,7 +1,10 @@
-#!/user/bin/env python3
+#!/usr/bin/env python3
 
 # File: code/content.py
 
+import os
+import sys
+from code import funcs, helpers
 
 address_format = """{first} {last}
 {address}
@@ -26,8 +29,11 @@ that must be subsequently filled in by the '..._funcs'.
 # # double braces fields are populated by the record data.
 letter_bodies = dict(
 
-    address_only="""
+    enclosure_only="""
 Please find enclosed.
+""",
+
+    addresses_only="""
 """,
 
     bill_payment="""
@@ -123,7 +129,7 @@ attribute of an instance of utils.Club for mailing purposes.
   of a Membership instance.
 """
 
-content_types = dict(  # which_letter
+content_types = dict(  # which_letter   '--which'
     # ## If a 'salutation' key/value is provided for any of the
     # ## following, the value will be used as the salutation
     # ## instead of a 'Dear {first} {last},' line.
@@ -134,17 +140,27 @@ content_types = dict(  # which_letter
         "from": authors["ak"],
         "body": letter_bodies["for_testing"],
         "post_scripts": ('forgive_duplicate',),
-        "funcs": [testing_func, ],
+        "funcs": [funcs.testing_func, ],
         "test": lambda record: True,
         "e_and_or_p": "one_only",
         },
-    address_only={
-        "subject": "1040-es",
+    enclosure_only={
+        "subject": "enclosure",
         "from": authors["ak"],
-        "body": letter_bodies["address_only"],
+        "body": letter_bodies["enclosure_only"],
         "post_scripts": (),
-        "funcs": [std_mailing_func,],
+        "funcs": [funcs.std_mailing_func,],
         "test": lambda record: record['phone']=='0',
+        "e_and_or_p": "usps",
+        },
+
+    addresses_only={
+        "subject": "",
+        "from": authors["ak"],
+        "body": letter_bodies["addresses_only"],
+        "post_scripts": (),
+        "funcs": [funcs.std_mailing_func,],
+        "test": lambda record: True,
         "e_and_or_p": "usps",
         },
 
@@ -153,12 +169,12 @@ content_types = dict(  # which_letter
         "from": authors["bc"],
         "body": letter_bodies["bill_payment"],
         "post_scripts": (),
-        "funcs": [std_mailing_func, ],
+        "funcs": [funcs.std_mailing_func, ],
         "test": lambda record: True,
         "e_and_or_p": "usps",
         },
-
 )
+content_keys = set(content_types.keys())
 
 printers = dict(
     # tuples in the case of envelope windows.
@@ -226,7 +242,7 @@ def get_postscripts(which_letter):
     """
     ret = []
     n = 0
-    for post_script in which_letter["post_scripts"]:
+    for post_script in content_types[which_letter]["post_scripts"]:
         ret.append("\n" + "P"*n + "PS " + post_script)
         n += 1
     return ret
@@ -239,27 +255,32 @@ def prepare_letter_template(which_letter, lpr):
     <printer>: one of the keys to the <printers> dict
     Returns a 'letter' /w formatting fields.
     """
+    lpr = printers[lpr]
     ret = [""] * lpr["top"]  # add blank lines at top
     # return address:
-    ret_addr = address_format.format(**which_letter["from"])
-    ret.append(code.helpers.expand(ret_addr, lpr['frm'][0]))
+    ret_addr = address_format.format(
+            **content_types[which_letter]["from"])
+    ret.append(helpers.expand(ret_addr, lpr['frm'][0]))
     # format string for date:
-    ret.append(code.helpers.expand(
-            (code.helpers.get_datestamp()), lpr['date']))
+    ret.append(helpers.expand(
+            (helpers.get_datestamp()), lpr['date']))
     # format string for recipient adress:
-    ret.append(code.helpers.expand(address_format, lpr['to'][0]))
+    ret.append(helpers.expand(address_format, lpr['to'][0]))
+    if which_letter == "addresses_only":
+        return '\n'.join(ret)
     # subject/Re: line
-    ret.append(code.helpers.expand(
-        "Re: {}".format(which_letter["subject"]), lpr['re']))
+    ret.append(helpers.expand(
+        "Re: {}".format(content_types[which_letter]["subject"]),
+        lpr['re']))
     # format string for salutation:
     try:
-        ret.append(which_letter["salutation"] + "\n")
+        ret.append(content_types[which_letter]["salutation"] + "\n")
     except KeyError:
         ret.append("Dear {first} {last},\n")
     # body of letter (with or without {extra}(s))
-    ret.append(which_letter["body"])
+    ret.append(content_types[which_letter]["body"])
     # signarue:
-    ret.append(which_letter["from"]["mail_signature"])
+    ret.append(content_types[which_letter]["from"]["mail_signature"])
     # post script:
     ret.extend(get_postscripts(which_letter))
     return '\n'.join(ret)
@@ -272,8 +293,8 @@ def prepare_email_template(which_letter):
     Format fields are subsequently filled by **record.
     """
     ret = ["Dear {first} {last},"]
-    ret.append(which_letter["body"])
-    ret.append(which_letter["from"]["email_signature"])
+    ret.append(content_types[which_letter]["body"])
+    ret.append(content_types[which_letter]["from"]["email_signature"])
     ret.extend(get_postscripts(which_letter))
     return '\n'.join(ret)
 
@@ -285,7 +306,6 @@ def contents():
     Typical usage:
         print('\n'.join(contents()))
     """
-    return
     tuples = (('custom_lambdas', custom_lambdas),
               ('letter_bodies', letter_bodies),
               ('post_scripts', post_scripts),
@@ -301,9 +321,29 @@ def contents():
         r = []
         for key in tup[1]:
             r.append(key)
-        ret.extend(code.helpers.tabulate(r,
+        ret.extend(helpers.tabulate(r,
                                     alignment='<',
                                     max_width=140,
                                     separator=' | ')
                    )
     return ret
+
+
+def categories():
+    """
+    Needs to be rewritten to take advantage of the -T and -w <width>
+    options.
+    """
+    ret = ["Possible choices for the '--which' option are: ", ]
+    ret.extend(
+        helpers.tabulate(
+            sorted([key for key in content_types.keys()]),
+            separator='  '))
+#   ret.extend((("\t" + key) for key in content.content_types.keys()))
+    return '\n'.join(ret)
+
+
+if __name__ == "__main__":
+    print(categories())
+    print('\n'.join(contents()))
+    print("code/content.py compiles OK")
