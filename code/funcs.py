@@ -286,29 +286,9 @@ def append_email(record, gbls):
         'attachments': [],
         'body': body,
     }
-    sponsor_email_addresses = ''
-    if gbls.cc_sponsors:
-        record = helpers.Rec(record)
-        name_key = record(fstrings['last_first'])
-        if name_key in gbls.applicant_set:
-            sponsors = gbls.sponsors_by_applicant[name_key]
-            # Use list comprehension for the following:
-            sponsor_email_addresses = []
-            for sponsor in gbls.sponsors_by_applicant[name_key]:
-#               print('{} sponsor: {}'.format(name_key, sponsor))
-#               print('appending: {}'.format(
-#                               gbls.sponsor_emails[sponsor]))
-                addr = gbls.sponsor_emails[sponsor]
-                if addr:
-                    sponsor_email_addresses.append(addr)
-            sponsor_email_addresses = ','.join(
-                    sponsor_email_addresses)
-    if gbls.cc: ccs = gbls.cc
-    else: ccs = ''
-    email['Cc'] = helpers.join_email_listings(
-                                    sponsor_email_addresses, ccs)
-    if gbls.bcc:
-        email['Bcc'] = gbls.bcc
+    email['Cc'] = gbls.d["--cc"]
+    email['Bcc'] = gbls.d["--bcc"]
+    email["attachments"] = gbls.d["ATTACHMENTS"]
     gbls.json_data.append(email)
 
 

@@ -4,7 +4,6 @@
 
 import os
 
-
 def set_file_name(root, name):
     return os.path.join(root,name)
 
@@ -17,7 +16,7 @@ DEFAULT_JSON_FILE = set_file_name(DATA_DIR, 'emails.json')
 DEFAULT_MAIL_DIR = set_file_name(DATA_DIR, 'MailDir')
 DEFAULT_MTA = 'easy'
 DEFAULT_RECIPIENT = 'all'  # everyone in db will recieve letter/email
-DEFAULT_PRINTER =  'X6505_e1'
+DEFAULT_PRINTER =  'X6505_e10'
 
 
 class Gbls(object):
@@ -34,10 +33,11 @@ class Gbls(object):
         Many attributes are assigned by other code: see
         code/rec.py traverse_records docstring.
         """
-        if self.n_instances > 0:
+        if self.n_instances > 0:  # ensure no more than one instance
             raise NotImplementedError("Only one instance allowed.")
         self.inc_n_instances()
-        self.d = args
+        self.d = args  # all arguments available through instance
+        # set defaults:
         if not self.d['--dir']:
             self.d['--dir'] = DEFAULT_MAIL_DIR  # letters are here
         if not self.d['-e']:
@@ -53,7 +53,7 @@ class Gbls(object):
         if not self.d['-p']:
             self.d['-p'] = DEFAULT_PRINTER
 
-        if self.d['-d']:
+        if self.d['-d']:  # for debugging
             for key, val in self.d.items():
                 print("{}: {}".format(key, val))
 

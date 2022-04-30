@@ -103,11 +103,11 @@ authors = dict(  # from
         postal_code="V9L 6T2",
         country="Canada",
         email_signature="\nSincerely,\nAlex Kleider",
-        email="akleider@sonic.net",
-        reply2="akleider@sonic.net",
+        email="alex@kleider@ca",
+        reply2="alex@kleider@ca",
         mail_signature="\nSincerely,\n\n\nAlex Kleider",
         ),
-    ak=dict(  # AK in Bolinas
+    bo=dict(  # AK in Bolinas
         first="Alex",
         last="Kleider",
         address="PO Box 277",
@@ -116,8 +116,8 @@ authors = dict(  # from
         postal_code="94924",
         country="USA",
         email_signature="\nSincerely,\nAlex Kleider",
-        email="akleider@sonic.net",
-        reply2="akleider@sonic.net",
+        email="alexkleider@protonmail.com",
+        reply2="alexkleider@protonmail.com",
         mail_signature="\nSincerely,\n\n\nAlex Kleider",
         ),
     )
@@ -156,16 +156,16 @@ content_types = dict(  # which_letter   '--which'
     # ## stage formatting.
     for_testing={
         "subject": "This is a test.",
-        "from": authors["ak"],
+        "from": authors["bo"],
         "body": letter_bodies["for_testing"],
         "post_scripts": ('forgive_duplicate',),
         "funcs": [funcs.testing_func, ],
-        "test": lambda record: True,
+        "test": lambda record: record['first']=='Alex',
         "e_and_or_p": "one_only",
         },
     enclosure_only={
         "subject": "enclosure",
-        "from": authors["ak"],
+        "from": authors["bo"],
         "body": letter_bodies["enclosure_only"],
         "post_scripts": (),
         "funcs": [funcs.std_mailing_func,],
@@ -174,7 +174,7 @@ content_types = dict(  # which_letter   '--which'
         },
     request_address_change={
         "subject": "request_address_change",
-        "from": authors["ak"],
+        "from": authors["bo"],
         "body": letter_bodies["request_address_change"],
         "post_scripts": (),
         "funcs": [funcs.std_mailing_func,],
@@ -184,7 +184,7 @@ content_types = dict(  # which_letter   '--which'
 
     addresses_only={
         "subject": "",
-        "from": authors["ak"],
+        "from": authors["bo"],
         "body": letter_bodies["addresses_only"],
         "post_scripts": (),
         "funcs": [funcs.std_mailing_func,],
@@ -206,7 +206,7 @@ content_keys = set(content_types.keys())
 
 printers = dict(
     # tuples in the case of envelope windows.
-    X6505_e1=dict(  # Smaller envelope.
+    X6505_e9=dict(  # Smaller envelope.  #9: 3-7/8 x 8-7/8"
         # e1: envelope with distances (in mm) from top to
         # top of top window       21
         # bottom of top window    43
@@ -219,7 +219,7 @@ printers = dict(
         to=(5, 30),  # recipient window 12..16
         re=3,  # lines below bottom window
         ),
-    X6505_e2=dict(  # Larger envelope.
+    X6505_e10=dict(  # Larger envelope. #10: 4-1/8 x 9-1/2"
         indent=5,
         top=2,  # blank lines at top  1 ..2
         frm=(4, 25),  # return window 3..6
@@ -227,7 +227,7 @@ printers = dict(
         to=(5, 30),  # recipient window 12..16
         re=3,  # lines below bottom window
         ),
-    HL2170=dict(  # large envelopes, Cavin Rd usb printer
+    HL2170_e10=dict(  # large envelopes, Cavin Rd usb printer
         indent=3,
         top=1,  # blank lines at top
         frm=(5, 25),  # return window

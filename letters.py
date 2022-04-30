@@ -58,7 +58,7 @@ args = docopt.docopt(__doc__, version=code.globals.VERSION)
 def main():
     gbls = code.globals.Gbls(args)  # create an instance
     if gbls.d['send']:    ## send CMD
-        code.mail.send_emails(gbls.d['-j'])
+        code.mail.send_emails(gbls)
     elif gbls.d['display']:    ## send CMD
         with open(gbls.d['-o'], 'w') as stream:
             stream.write( code.mail.display_emails( gbls.d['-j']))
@@ -68,6 +68,7 @@ def main():
              and gbls.d['--which'] in code.content.content_keys):
         print("Invalid or missing '--which' parameter.")
     else:                  ## prepare mailing
+        gbls.which = code.content.content_types[args['--which']]
         print("Preparing letter(s): content_type= {}"
                 .format(gbls.d['--which']))
         code.mail.generate_mailing(gbls)

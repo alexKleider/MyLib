@@ -4,8 +4,9 @@
 
 import os
 import csv
+import json
 import shutil
-from code import helpers, funcs, content, globals
+from code import helpers, funcs, content, globals, send
 
 def display_emails(email_json_file):
     """
@@ -26,15 +27,26 @@ def display_emails(email_json_file):
     print("Processed {} emails...".format(n_emails))
     return "\n".join(all_emails)
 
-def send_emails(email_json_file):
+
+def send_emails(gbls):
+    """
+    Sends emails prepared by prepare_mailing_cmd.
+    See also content.authors_DOCSTRING.
+    """
     print("Sending emails found in {}..."
-            .format(email_json_file))
-    print("NOT YET IMPLEMENTED")
+            .format(gbls.d['-j']))
+#   print("NOT YET IMPLEMENTED")
+    mta = gbls.d["--mta"]
+    wait = mta.endswith('g')
+    message = None
+    data = helpers.get_json(gbls.d['-j'], report=True)
+    send.send(data, mta, include_wait=wait)
     print("...finished sending emails.")
+
     
 def generate_mailing(gbls):
     # give user opportunity to abort if files are still present:
-#   helpers.check_before_deletion((gbls.d['-j'], gbls.d['--dir']))
+    helpers.check_before_deletion((gbls.d['-j'], gbls.d['--dir']))
     if os.path.exists(gbls.d['--dir']): shutil.rmtree(gbls.d['--dir'])
     os.mkdir(gbls.d['--dir'])
     gbls.json_data = []
@@ -47,7 +59,7 @@ def generate_mailing(gbls):
                  gbls)  # 'which' comes from content
     # No point in creating a json file if no emails:
     if hasattr(gbls, 'json_data') and gbls.json_data:
-        with open(gbls.d['--json_file'], 'w') as file_obj:
+        with open(gbls.d['-j'], 'w') as file_obj:
             print('Dumping emails (JSON) to "{}".'
                     .format(file_obj.name))
             file_obj.write(json.dumps(gbls.json_data))
