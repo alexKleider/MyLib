@@ -6,7 +6,13 @@ import os
 import sys
 from code import funcs, helpers
 
-address_format = """{first} {last}
+from_address_format = """{first} {last}
+{address}
+{town}, {state} {postal_code}
+{country}"""
+
+to_address_format = """{first} {last}
+{company}
 {address}
 {town}, {state} {postal_code}
 {country}"""
@@ -28,6 +34,19 @@ that must be subsequently filled in by the '..._funcs'.
 # # single braces are for fields populated by the content_type data.
 # # double braces fields are populated by the record data.
 letter_bodies = dict(
+
+    request_address_change="""
+The enclosed letter caused the Post Office much distress!
+
+Please change my address to include a "PO Box 277" line
+or expand the postal code to "94924-0277".
+
+I believe either (or better still, both) would appease the USPS.
+
+Also, I'm puzzled by the mailing since there was nothing therein
+except blank pages.  Was there something that was supposed to come to
+me but which got forgotten?
+""",
 
     enclosure_only="""
 Please find enclosed.
@@ -153,6 +172,15 @@ content_types = dict(  # which_letter   '--which'
         "test": lambda record: record['phone']=='0',
         "e_and_or_p": "usps",
         },
+    request_address_change={
+        "subject": "request_address_change",
+        "from": authors["ak"],
+        "body": letter_bodies["request_address_change"],
+        "post_scripts": (),
+        "funcs": [funcs.std_mailing_func,],
+        "test": lambda record: record['first']=='Kaiser',
+        "e_and_or_p": "usps",
+        },
 
     addresses_only={
         "subject": "",
@@ -189,7 +217,7 @@ printers = dict(
         frm=(4, 25),  # return window 3..6
         date=5,  # lines between windows 7..11
         to=(5, 30),  # recipient window 12..16
-        re=2,  # lines below bottom window
+        re=3,  # lines below bottom window
         ),
     X6505_e2=dict(  # Larger envelope.
         indent=5,
@@ -197,7 +225,7 @@ printers = dict(
         frm=(4, 25),  # return window 3..6
         date=5,  # lines between windows 7..11
         to=(5, 30),  # recipient window 12..16
-        re=2,  # lines below bottom window
+        re=3,  # lines below bottom window
         ),
     HL2170=dict(  # large envelopes, Cavin Rd usb printer
         indent=3,
@@ -205,7 +233,7 @@ printers = dict(
         frm=(5, 25),  # return window
         date=4,  # between windows
         to=(7, 29),  # recipient window
-        re=3,  # below windows => fold
+        re=4,  # below windows => fold
         ),
     loft=dict(
         indent=0,
@@ -213,23 +241,7 @@ printers = dict(
         frm=(5, 25),  # return window
         date=4,  # between windows
         to=(7, 29),  # recipient window
-        re=3,  # below windows => fold
-        ),
-    Janice=dict(
-        indent=4,
-        top=4,  # blank lines at top
-        frm=(5, 25),  # return window
-        date=4,  # between windows
-        to=(7, 29),  # recipient window
-        re=3,  # below windows => fold
-        ),
-    Michael=dict(
-        indent=0,
-        top=0,  # blank lines at top
-        frm=(4, 30),  # return window
-        date=3,  # between windows
-        to=(6, 38),  # recipient window
-        re=3,  # below windows => fold
+        re=4,  # below windows => fold
         ),
     )
 # ## ... end of printers (dict specifying printer being used.)
@@ -258,14 +270,14 @@ def prepare_letter_template(which_letter, lpr):
     lpr = printers[lpr]
     ret = [""] * lpr["top"]  # add blank lines at top
     # return address:
-    ret_addr = address_format.format(
+    ret_addr = from_address_format.format(
             **content_types[which_letter]["from"])
     ret.append(helpers.expand(ret_addr, lpr['frm'][0]))
     # format string for date:
     ret.append(helpers.expand(
             (helpers.get_datestamp()), lpr['date']))
     # format string for recipient adress:
-    ret.append(helpers.expand(address_format, lpr['to'][0]))
+    ret.append(helpers.expand(to_address_format, lpr['to'][0]))
     if which_letter == "addresses_only":
         return '\n'.join(ret)
     # subject/Re: line
