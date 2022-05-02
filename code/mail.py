@@ -55,7 +55,7 @@ def generate_mailing(gbls):
     gbls.letter_template = content.prepare_letter_template(
             gbls.d['--which'], gbls.d['-p'])
     traverse_records(gbls.d['-i'],
-                 content.content_types[gbls.d['--which']]["funcs"],
+                 gbls.which["funcs"],
                  gbls)  # 'which' comes from content
     # No point in creating a json file if no emails:
     if hasattr(gbls, 'json_data') and gbls.json_data:

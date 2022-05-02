@@ -48,30 +48,28 @@ Commands:
 import os
 import sys
 import docopt
-import code.content
-import code.mail
-import code.globals
+from code import content, mail, globals
 
-args = docopt.docopt(__doc__, version=code.globals.VERSION)
+args = docopt.docopt(__doc__, version=globals.VERSION)
 
 
 def main():
-    gbls = code.globals.Gbls(args)  # create an instance
+    gbls = globals.Gbls(args)  # create an instance
+    gbls.which = content.content_types[gbls.d['--which']]
     if gbls.d['send']:    ## send CMD
-        code.mail.send_emails(gbls)
+        mail.send_emails(gbls)
     elif gbls.d['display']:    ## send CMD
         with open(gbls.d['-o'], 'w') as stream:
-            stream.write( code.mail.display_emails( gbls.d['-j']))
+            stream.write( mail.display_emails( gbls.d['-j']))
         print("Human readable version of emails sent to {}"
                 .format(gbls.d['-o']))
     elif not (gbls.d['--which'] 
-             and gbls.d['--which'] in code.content.content_keys):
+             and gbls.d['--which'] in content.content_keys):
         print("Invalid or missing '--which' parameter.")
     else:                  ## prepare mailing
-        gbls.which = code.content.content_types[args['--which']]
-        print("Preparing letter(s): content_type= {}"
+        print("Preparing letter/email(s): content_type= {}"
                 .format(gbls.d['--which']))
-        code.mail.generate_mailing(gbls)
+        mail.generate_mailing(gbls)
 
 
 if __name__ == "__main__":

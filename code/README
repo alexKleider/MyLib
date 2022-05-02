@@ -1,0 +1,11 @@
+
+NOTE:
+
+the following files are hard links!
+They can be accessed from ....
+
+helpers.py  ~/Git/Club/Utils/helpers.py  &  ~/PyLib
+config.py  ~/Git/Club/Utils/Pymail/config.py
+send.py  ~/Git/Club/Utils/Pymail/send.py
+
+

@@ -169,7 +169,7 @@ content_types = dict(  # which_letter   '--which'
         "body": letter_bodies["enclosure_only"],
         "post_scripts": (),
         "funcs": [funcs.std_mailing_func,],
-        "test": lambda record: record['phone']=='0',
+        "test": lambda record: record['first'] in ('Alex', 'A'):
         "e_and_or_p": "usps",
         },
     request_address_change={

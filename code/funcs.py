@@ -96,8 +96,9 @@ def traverse_records(infile, custom_funcs, gbls):
         gbls.fieldnames = dict_reader.fieldnames  # may be unnecessary
         gbls.n_fields = len(gbls.fieldnames)  # to check db integrity
         for record in dict_reader:
-            for custom_func in custom_funcs:
-                custom_func(record, gbls)
+            if gbls.which['test'](record):
+                for custom_func in custom_funcs:
+                    custom_func(record, gbls)
 
 
 def report_error(report, gbls):
@@ -307,11 +308,9 @@ def q_mailing(record, gbls):
     Dispatches email &/or letter to appropriate
     (email &/or letter) 'bin'.
     """
-    content_type = content.content_types[gbls.d['--which']]
-    record["subject"] = content_type["subject"]
-    # ^ the above should be assigned elsewhere!!
+    record["subject"] = glbls.which["subject"]
     # check how to send:
-    how = content_type["e_and_or_p"]
+    how = glbls.which["e_and_or_p"]
     if how == "email":
         append_email(record, gbls)
     elif how == "both":
@@ -337,7 +336,7 @@ def prepare_mailing(gbls):
     (See Notes/call_flow.)
     """
     traverse_records(gbls.infile,
-            content.content_types[gbls.d['--which']]["funcs"],
+            glbls.which["funcs"],
              gbls)  # 'which' comes from content
 #   listing = [func.__name__ for func in gbls.which["funcs"]]
 #   print("Functions run by traverse_records: {}".format(listing))
@@ -364,16 +363,14 @@ def std_mailing_func(record, gbls):
     Mailing is sent if the "test" lambda => True.
     Otherwise the record is ignored.
     """
-    content_type = content.content_types[gbls.d['--which']]
-    if content_type["test"](record):
-        record["subject"] = content_type["subject"]
+    if glbls.which["test"](record):
+        record["subject"] = glbls.which["subject"]
         q_mailing(record, gbls)
 
 
 def bad_address_mailing_func(record, gbls):
-    content_type = content.content_types[gbls.d['--which']]
-    if content_type["test"](record):
-        record["subject"] = content_type["subject"]
+    if glbls.which["test"](record):
+        record["subject"] = glbls.which["subject"]
         record['extra'] = ("{address}\n{town}, {state} {postal_code}"
                            .format(**record))
         q_mailing(record, gbls)
@@ -385,9 +382,8 @@ def testing_func(record, gbls):
     Mailing is sent if the "test" lambda => True.
     Otherwise the record is ignored.
     """
-    content_type = content.content_types[gbls.d['--which']]
-    if content_type["test"](record):
-        record["subject"] = content_type["subject"]
+    if glbls.which["test"](record):
+        record["subject"] = glbls.which["subject"]
         record['extra'] = "Blah, Blah, Blah!"
         q_mailing(record, gbls)
 
