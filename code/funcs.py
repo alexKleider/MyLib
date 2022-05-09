@@ -308,9 +308,9 @@ def q_mailing(record, gbls):
     Dispatches email &/or letter to appropriate
     (email &/or letter) 'bin'.
     """
-    record["subject"] = glbls.which["subject"]
+    record["subject"] = gbls.which["subject"]
     # check how to send:
-    how = glbls.which["e_and_or_p"]
+    how = gbls.which["e_and_or_p"]
     if how == "email":
         append_email(record, gbls)
     elif how == "both":
@@ -336,7 +336,7 @@ def prepare_mailing(gbls):
     (See Notes/call_flow.)
     """
     traverse_records(gbls.infile,
-            glbls.which["funcs"],
+            gbls.which["funcs"],
              gbls)  # 'which' comes from content
 #   listing = [func.__name__ for func in gbls.which["funcs"]]
 #   print("Functions run by traverse_records: {}".format(listing))
@@ -363,14 +363,14 @@ def std_mailing_func(record, gbls):
     Mailing is sent if the "test" lambda => True.
     Otherwise the record is ignored.
     """
-    if glbls.which["test"](record):
-        record["subject"] = glbls.which["subject"]
+    if gbls.which["test"](record):
+        record["subject"] = gbls.which["subject"]
         q_mailing(record, gbls)
 
 
 def bad_address_mailing_func(record, gbls):
-    if glbls.which["test"](record):
-        record["subject"] = glbls.which["subject"]
+    if gbls.which["test"](record):
+        record["subject"] = gbls.which["subject"]
         record['extra'] = ("{address}\n{town}, {state} {postal_code}"
                            .format(**record))
         q_mailing(record, gbls)
@@ -382,8 +382,8 @@ def testing_func(record, gbls):
     Mailing is sent if the "test" lambda => True.
     Otherwise the record is ignored.
     """
-    if glbls.which["test"](record):
-        record["subject"] = glbls.which["subject"]
+    if gbls.which["test"](record):
+        record["subject"] = gbls.which["subject"]
         record['extra'] = "Blah, Blah, Blah!"
         q_mailing(record, gbls)
 
