@@ -55,6 +55,7 @@ args = docopt.docopt(__doc__, version=globals.VERSION)
 
 def main():
     gbls = globals.Gbls(args)  # create an instance
+    print(repr(gbls.d['--which']))
     gbls.which = content.content_types[gbls.d['--which']]
     if gbls.d['send']:    ## send CMD
         mail.send_emails(gbls)
