@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+# File: stopwatch1.py
 
 import time
 import sys

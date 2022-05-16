@@ -188,7 +188,7 @@ content_types = dict(  # which_letter   '--which'
         "body": letter_bodies["addresses_only"],
         "post_scripts": (),
         "funcs": [funcs.std_mailing_func,],
-        "test": lambda record: True,
+        "test": lambda record: record['first']=='Roy',
         "e_and_or_p": "usps",
         },
 
