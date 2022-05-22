@@ -7,7 +7,8 @@ To provide myself with ability to print mailing and return addresses
 on a letter so they'll show up in the envelope windows.
 Data is kept out of the repository in ../Data (i.e. my.csv)
 but from time to time I'll tar them and encrypt the tar file and
-include that with the repo so that the data is also backed up.
+include that with the repo so that the data is also backed up but kept
+confidential.
 
 Usage:
   ./letters.py [-O ]  -? | --help | --version
