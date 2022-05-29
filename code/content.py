@@ -73,6 +73,32 @@ has a corresponding entry in the record dict (typically arranged
 by the custom function.
 """,
 
+
+    for_IRS="""
+I am in receipt of your letter dated May 23 (a copy of which is
+enclosed.)
+
+It refers to an "inquiry of Mar. 21, 2022." Neither my wife (June) or
+I made any such inquiry. 
+
+I know nothing of any such inquiry.  Please explain.
+""",
+
+    for_Angie="""
+I'm including all my Post Office receipts (for stamps purchased, both
+in the US and in Canada- the latter have been discounted since the
+Canadian dollar is considerably cheaper!) as well as a request for
+reimbursement for envelopes (for which I kept a record of cost but
+can't easily produce a receipt.)
+
+Rather than actually reimbursing me, can you simply apply it as a
+donation towards the Club's Roof Fund?  Perhaps do it in June's name-
+she'll be the one most likely to value a tea towel:-)
+
+Hope this is OK.
+
+"""
+
 )
 
 
@@ -116,9 +142,9 @@ authors = dict(  # from
         postal_code="94924",
         country="USA",
         email_signature="\nSincerely,\nAlex Kleider",
-        email="alexkleider@protonmail.com",
-        reply2="alexkleider@protonmail.com",
-        mail_signature="\nSincerely,\n\n\nAlex Kleider",
+        email="akleider@sonic.net",
+        reply2="akleider@sonic.net",
+        mail_signature="\nSincerely,\n\n\nAlexander Kleider",
         ),
     )
 
@@ -148,12 +174,13 @@ attribute of an instance of utils.Club for mailing purposes.
   of a Membership instance.
 """
 
-content_types = dict(  # which_letter   '--which'
+# which_letter   '--which'
     # ## If a 'salutation' key/value is provided for any of the
     # ## following, the value will be used as the salutation
     # ## instead of a 'Dear {first} {last},' line.
     # ## The first 4 listed values for each are used for first
     # ## stage formatting.
+content_types = dict(  
     for_testing={
         "subject": "This is a test.",
         "from": authors["bo"],
@@ -181,7 +208,6 @@ content_types = dict(  # which_letter   '--which'
         "test": lambda record: record['first']=='Kaiser',
         "e_and_or_p": "usps",
         },
-
     addresses_only={
         "subject": "",
         "from": authors["bo"],
@@ -191,7 +217,6 @@ content_types = dict(  # which_letter   '--which'
         "test": lambda record: record['first']=='Roy',
         "e_and_or_p": "usps",
         },
-
     bill_payment={
         "subject": "Payment of Invoice.",
         "from": authors["bc"],
@@ -201,7 +226,27 @@ content_types = dict(  # which_letter   '--which'
         "test": lambda record: True,
         "e_and_or_p": "usps",
         },
+    for_Angie={
+        "subject": "reimbursements ==> roof fund donation",
+        "from": authors['bo'],
+        "body": letter_bodies["for_Angie"],
+        "post_scripts": (),
+        "funcs": (funcs.std_mailing_func, ),
+        "test": lambda record: record['first']=='Angie',
+        "e_and_or_p": "usps",
+        },
+    for_IRS={
+        "salutation": "Dear Tax Collector:",
+        "subject": "Mystery inquiry",
+        "from": authors['bo'],
+        "body": letter_bodies["for_IRS"],
+        "post_scripts": (),
+        "funcs": (funcs.std_mailing_func, ),
+        "test": lambda record: record['first']=='IRS',
+        "e_and_or_p": "usps",
+        },
 )
+
 content_keys = set(content_types.keys())
 
 printers = dict(

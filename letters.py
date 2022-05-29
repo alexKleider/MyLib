@@ -40,7 +40,7 @@ Options:
   -o <outfile>  File for readable version of emails. [default: 2check]
   -O  Show Options/commands/arguments.  Used for debugging.
   -p <printer>  Deals with printer variablility; ensures correct
-        alignment of text when printing letters.
+        alignment of text when printing letters. [default: X6505_e9]
   --which <letter>  Which letter to prepare.
 
 Commands:
