@@ -208,13 +208,22 @@ content_types = dict(
         "test": lambda record: record['first']=='Kaiser',
         "e_and_or_p": "usps",
         },
+    fromBC={
+        "subject": "",
+        "from": authors["bc"],
+        "body": letter_bodies["addresses_only"],
+        "post_scripts": (),
+        "funcs": [funcs.std_mailing_func,],
+        "test": lambda record: True,
+        "e_and_or_p": "usps",
+        },
     addresses_only={
         "subject": "",
         "from": authors["bo"],
         "body": letter_bodies["addresses_only"],
         "post_scripts": (),
         "funcs": [funcs.std_mailing_func,],
-        "test": lambda record: record['first']=='Roy',
+        "test": lambda record: True,
         "e_and_or_p": "usps",
         },
     bill_payment={
@@ -274,7 +283,7 @@ printers = dict(
         ),
     HL2170_e10=dict(  # large envelopes, Cavin Rd usb printer
         indent=3,
-        top=1,  # blank lines at top
+        top=3,  # blank lines at top
         frm=(5, 25),  # return window
         date=4,  # between windows
         to=(7, 29),  # recipient window
@@ -331,7 +340,7 @@ def prepare_letter_template(which_letter, lpr):
             (helpers.get_datestamp()), lpr['date']))
     # format string for recipient adress:
     ret.append(helpers.expand(to_address_format, lpr['to'][0]))
-    if which_letter == "addresses_only":
+    if which_letter in {"addresses_only", 'fromBC'}:
         return '\n'.join(ret)
     # subject/Re: line
     ret.append(helpers.expand(

@@ -11,9 +11,9 @@ can be left as 'gbls=None' when it's not needed.
 
 import os
 import sys
-sys.path.insert(0, os.path.split(sys.path[0])[0])
 import csv
 import json
+sys.path.insert(0, os.path.split(sys.path[0])[0])
 from code import content, helpers
 
 
