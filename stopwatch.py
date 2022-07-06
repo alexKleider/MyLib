@@ -1,8 +1,21 @@
 #!/usr/bin/env python3
 
-# File: stopwatch2.py
+# File: stopwatch.py
 
 """
+original_version = '''
+import time
+import sys
+
+when = 0
+while True:
+    minutes, seconds = divmod(when, 60)
+    hours, minutes = divmod(minutes, 60)
+    print(f'  {hours:02d}:{minutes:02d}:{seconds:02d}', end='\r')
+    sys.stdout.flush()
+    when += 1
+    time.sleep(1)
+'''
 Student Jamie reminded me about the flush option to print(). So we
 don't need to invoke sys.stdout.flush(), like I did in the original.
 Thanks, Jamie!)
