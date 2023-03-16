@@ -46,20 +46,31 @@ for line in lines:
 
 ret = []   # to be returned
 page = []
+extranewlines = 0
 for block in [b for b in blocks if b]:
-#   print(f"{len(block) + len(page)}")
-    if (len(page) + len(block)) < nlines:
-#       _ = input("ok")
+    npage = len(page)
+    nblock = len(block)
+    print("top of for block in blocks loop")
+    print(f"lengths are page: {npage}, " +
+            f"block: {nblock}, total: " +
+            f"{npage + nblock}")
+    if (npage + nblock + extranewlines) < nlines:
+        _ = input("ok")
         page.extend(block)
-#       _ = input("too long")
+        print(f"page length now {len(page)}")
     else:
+        _ = input("too long")
+        extranewlines = 0
         if ret:
 #           _ = input(f"ret[-1]: '{ret[-1]}'")
             ret[-1] = ret[-1].rstrip() + '\f'
         ret.extend(page)
+        print(f"ret.extended by page length {len(page)}")
         page = [item for item in block]
     page[-1] = page[-1].rstrip() + '\n'
+    extranewlines += 1
 if page:
+    print("Still have page content to append.")
     ret[-1] = ret[-1].rstrip() + '\f'
     ret.extend(page)
 
