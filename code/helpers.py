@@ -3,16 +3,17 @@
 # File: helpers.py
 
 """
-Helper functions developed for the Club/Utils repo.
+Helper functions (initially developed for the Club/Utils repo
+but now used in the following places unified by hard linking.)
 This file appears in
     ~/Git/Club/Utils
-    ~/Git/PyLib
     ~/Git/Lib/code
-(by means of hard links.)
+    ~/Git/Sql/code
 """
 
 import os
 import sys
+import shutil
 import csv
 import json
 import datetime
@@ -66,20 +67,22 @@ def equal_float(a, b):
     compares floats for equality to limit of machine's accuracy
     # from Mark Summerfield
     """
-    return abs(a -b) <= sys.float_info.epsilon
+    return abs(a - b) <= sys.float_info.epsilon
 
 
 def get_attributes(r):
+    """
+    """
     return sorted([attribute for attribute in dir(r)
             if not attribute.startswith('__')])
 
 
-def check_before_deletion(file_names):
+def check_before_deletion(file_names, delete=False):
     """
     Parameter <file_names> may be one name or a sequence of names.
     For each- check with user if ok to delete or overwrite.
     Aborts program execution if permission is not granted.
-    Does not itself do any deletion.
+    Does not itself do any deletion unless delete is set to True.
     """
     if isinstance(file_names, str):
         file_names = (file_names, )
@@ -91,6 +94,11 @@ def check_before_deletion(file_names):
             if not(response and response[0] in 'yY'):
                 print('Aborting program execution.')
                 sys.exit()
+            elif delete:
+                if os.path.isdir(f):
+                    shutil.rmtree(f)
+                elif os.path.isfile(f):
+                    os.remove(f)
 
 
 def get_first_friday_of_month(date=None):
@@ -153,6 +161,11 @@ def club_year(which='this', now=datetime.date.today()):
 
 
 def expand_date(date_string):
+    """
+    Assumes date_string is in form yymmdd or yyyymmdd;
+    Returns date in 'yyyy-mm-dd' format
+    or "BAD DATE" if len(date_string) != 6 or 8.
+    """
     if len(date_string) == 6:
         year = '{}{}'.format(CURRENT_CENTURY, date_string[:2])
     elif len(date_string) == 8:
@@ -180,10 +193,6 @@ def get_datestamp(date=None):
     else:
         d = datetime.date.today()
     return d.strftime(date_template)
-
-
-def do_nothing(text):
-    print(text)
 
 
 def print_args(args, argument):
@@ -267,6 +276,13 @@ class Rec(dict):
         return fstr.format(**self)
 
 
+def collect_last_first_keys(listofdicts):
+    ret = []
+    for rec in listofdicts:
+        ret.append('{last},{first}'.format(**rec))
+    return ret
+
+
 def str_add(*args):
     total = 0
     for arg in args:
@@ -277,12 +293,11 @@ def str_add(*args):
 
 def join_email_listings(*args):
     """
-    Accepts any number of args, each of which must be a string
-    expected to be a comma (with no spaces, as demanded when provided
-    as a commandline parameter/argument) separated listing of email
-    addresses.
-    Returned is a single string of "," separated emails with no
-    duplicates suitable for placement into a 'cc' (or 'bcc') listing.
+    Accepts any number of args, each of which must be a string.
+    Each string might contain more than one email separated by
+    comas.  Returned is a single string of "," separated emails
+    with no duplicates suitable for placement into a 'cc'
+    (or 'bcc') listing.
     """
     res = []
     for arg in args:
@@ -293,7 +308,6 @@ def join_email_listings(*args):
     return ','.join(sorted(set(res)))
 
 
-# the following is notused...
 def script_location():
     return os.getcwd()
 
@@ -317,6 +331,9 @@ def useful_lines(stream, comment="#"):
 
 
 def lists2sets(dict_with_iterable_values):
+    """
+    Converts list values (of a dict) into sets.
+    """
     ret = {}
     for key in dict_with_iterable_values:
         ret[key] = set(dict_with_iterable_values[key])
@@ -537,12 +554,45 @@ def show_json_data(json_data, underlinechar=''):
     return collector
 
 
+def store(collector, filename):
+    """
+    Sends contents of <collector> (json format) to <filename>.
+    """
+    with open(filename, 'w') as stream:
+        stream.write('\n'.join(show_json_data(collector)))
+        print(f'Data written to {filename}')
+
+
 def dump2json_file(data, json_file, verbose=True):
+    """
+    <json_file> if it exists will be overwritten!!
+    """
     with open(json_file, "w") as json_file_obj:
         if verbose:
             print('Dumping (json) data to "{}".'.format(
                   json_file_obj.name))
         json.dump(data, json_file_obj)
+
+
+def add2json_file(data, json_file, verbose=True):
+    """
+    <data> will be appended to <json_file> if it exists,
+    it'll be created with <data> as a dict in a list of 1 item.
+    """
+    if os.path.exists(json_file):
+        with open(json_file, 'r', encoding='utf-8') as j_file:
+            if verbose:
+                print('Loading existing (json) data from "{}".'
+                        .format(j_file.name))
+            data2add = json.load(j_file)
+        data2add.append(data)
+    else:
+        data2add = [data, ]
+    with open(json_file, 'w', encoding='utf-8') as j_file:
+        if verbose:
+            print('Dumping (json) data to "{}".'.format(
+                  j_file.name))
+        json.dump(data2add, j_file)
 
 
 def get_json(file_name, report=False):
@@ -557,6 +607,8 @@ def get_json(file_name, report=False):
 
 
 def longest(x, y):
+    """
+    """
     if len(x) > len(y):
         return x
     else:
@@ -689,12 +741,27 @@ def tabulate(data,
     return new_data
 
 
+def send2file(text, filename, silent=False):
+    """
+    Write <text> to <filename> (silently (or not))
+    <text> must be either a string or a list of strings.
+    """
+    if not silent:
+        print(f"Sending text to {filename} ...")
+    if isinstance(text, list):
+        text = '\n'.join(text)
+    with open(filename, 'w') as stream:
+        stream.write(text)
+    if not silent:
+        print(f"... write to {filename} successfull.")
+
+
 def output(data, destination=None, announce=True):
     """
     Sends data (text) to (a file called) <destination>
     (which defaults to stdout.)
     """
-    if destination is None:
+    if not destination:
         print(data)
     else:
         with open(destination, "w") as fileobj:
@@ -719,18 +786,41 @@ def clarify_cc(s, word2remove='sponsors'):
     return (removed, res)
 
 
-def tofro_first_last(name):
+def tofro_first_last(name, as_key=True):
     """
     Parameter <name> is parsed and 
-    if of the form "John Doe", "Doe, John" is returned,
-    if of the form "Doe, John", "John Doe" is returned.
+    if of the form "John Doe":
+        returns "Doe,John", or
+            Doe, John if as_key==False
+    if of the form "Doe, John" or "Doe,John":
+            "John Doe" is returned.
     """
-    if ', ' in name:
-        last, first = name.split(', ')
-        return f"{first} {last}"
+    if ',' in name:
+        last, first = name.split(',')
+        return f"{first.strip()} {last.strip()}"
     else:
         first, last = name.split()
-        return f"{last}, {first}"
+        if as_key:
+            return f"{last},{first}"
+        else:
+            return f"{last}, {first}"
+
+
+def key2first_last(name):
+    first, last = name.split(',')
+    return f"{first} {last}"
+
+
+def loose_trailing_empty_strings(list_of_strings):
+    if list_of_strings:
+        while not list_of_strings[-1]:
+            list_of_strings = list_of_strings[:-1]
+    return list_of_strings
+
+
+def loose_spaces(line):
+    words = line.split()
+    return ''.join(words)
 
 
 def add_fields(fieldnames, csv_file, prefix='new_'):
@@ -823,6 +913,28 @@ def modify_csv_data(csv_file, func=None, params=None, outfile=None):
                 else:
                         writer.writerow(record)
     return outfile
+
+
+def compare_dicts(d1, d2,
+            name1='first', name2='second'):
+    """
+    """
+    ret = []
+    keys1 = set([key for key in d1.keys()])
+    keys2 = set([key for key in d2.keys()])
+    only_in1 = keys1 - keys2
+    only_in2 = keys2 - keys1
+    if only_in1:
+        ret.append(f"Only in {name1}:")
+        for key in sorted(only_in1):
+            values = sorted([value for value in d1[key]])
+            ret.append(f"\t{key}: "+', '.join(values))
+    if only_in2:
+        ret.append(f"Only in {name2}:")
+        for key in sorted(only_in2):
+            values = sorted([value for value in d2[key]])
+            ret.append(f"\t{key}: "+', '.join(values))
+    return '\n'.join(ret)
 
 
 def main():

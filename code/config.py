@@ -2,10 +2,13 @@
 
 # File: config.py  (provides infrastructure for send.py)
 
-## Two hard links:
-# this file is used by the ~/Git/Club/Utils code base where it is found as
-# Pymail/config.py
-# and by the ~/Git/Lib code base where it is found as code/config.py.
+## Three hard links:
+# this file is used by
+# 1. the ~/Git/Club/Utils code base where it is found as
+#    Pymail/config.py
+# 2. the ~/Git/Lib code base where it is found as code/config.py
+# 2. the ~/Git/Sql code base where it is found as
+#    code/Pymail/config.py
 
 """
 This file provides infrastructure for the accompanying file send.py
@@ -54,6 +57,8 @@ config = dict(
         "password": getpw("easy"),
         "tls": "on",
     },
+# google no longer provides smtp services so 
+# the following won't work!!
     akg= {
         "host": "smtp.gmail.com",
         "port": "587",
