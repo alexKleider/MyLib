@@ -1,0 +1,19 @@
+I am interested in open source hardware & software, but I have been disappointed that only about 4% of the desktop operating systems worldwide run Linux - https://gs.statcounter.com/os-market-share/desktop/worldwide
+
+I thought that it might help to have a place, a storefront, that would allow people to “showroom” open source hardware from a variety of manufacturers, like https://puri.sm/ & https://system76.com/ & https://www.turris.com/en/ & https://www.fairphone.com/en/.
+
+I do not know how many people buy new computer hardware in retail stores like Best Buy, Costco, Target, Wal Mart, Office Depot, etc. in Sonoma County, but my guess would be that it is a lot.
+
+There are plenty of independent computer retailers locally, such as https://www.santarosacomputers.com/ & https://ewastesonoma.com/ & https://www.sonomavalleytech.com/ & https://www.macdaddyrepairs.com/ & https://www.dksweb.com/.
+
+There are also plenty of companies that do IT contract work locally including https://www.grapecomm.net/ & https://www.portolasystems.net/ & https://klhconsulting.com/ & https://gosrtech.com/.
+
+I am interested enough in the concept of an open source tech support & retail store that I would be interested to help discuss the ideas involved, but I would not be able to do this on my own.
+
+Therefore, I wanted to compile this list and share it here, with the hopes that it spurs some kind of discussion or interest. Another option might be to try to organize an Installfest - https://en.wikipedia.org/wiki/Linux_user_group#Installfests
+
+Finally, I stumbled across this list of Linux User Groups that is very good! http://lugslist.com/
+
+Onward & upward!
+
+Brad 
