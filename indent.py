@@ -23,35 +23,41 @@ import sys
 INDENT = 6
 
 # Set up defaults:
-indent = INDENT
+outfile = ''
+indent = 0
 args = sys.argv
 arglen = len(args)
+if not arglen > 1:
+    print("Usage:  indent.py file_name [spaces2indent] [outfile]")
+    sys.exit()
 infile = args[1]
-root, fname = os.path.split(infile)
-dest_file = os.path.join(root, "new_{}".format(fname))
-
-# Collect options:
 if arglen > 2:
-    if args[2].isdecimal():
+    try:
         indent = int(args[2])
-    else:
-        dest_file = args[2]
-    if arglen > 3:
-        dest_file = args[3]
-print(f"Destination set to '{dest_file}'")
-print(f"source: {infile}")
-print(f"destin: {dest_file}")
-print(f"indent: {indent}")
+    except ValueError:
+        outfile = args[2]
+if not outfile:
+    try:
+        outfile = args[-1]
+    except OutOfRangeError:
+        root, fname = os.path.split(infile)
+        outfile = os.path.join(root, "new_{}".format(fname))
+if not indent:
+    indent = INDENT
 
-if infile == dest_file:
+print(f"source: {infile}")
+print(f"indent: {indent}")
+print(f"Destination set to '{outfile}'")
+
+if infile == outfile:
     with open(infile, 'r') as source:
         text = source.read()
-    with open(dest_file, 'w') as dest:
+    with open(outfile, 'w') as dest:
         for line in text.split('\n'):
             dest.write(' '*indent + line + '\n')
 else:
     with open(infile, 'r') as source:
-        with open(dest_file, 'w') as dest:
+        with open(outfile, 'w') as dest:
             for line in source:
                 dest.write(' '*indent + line)
 
