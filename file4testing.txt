@@ -1,0 +1,14 @@
+
+# File: file4testing.txt
+
+This is a text file used to test the indent.py script.
+
+It should deal with one, two, or three params.
+
+The one mandatory parameter is the name of an input file.
+If the second parameter is an iteger it replaces the default
+number of spaces to indent (which is INDENT=6.)
+If it is not an integer, or if it is and there is a third
+parameter, this specifies the name of an output file.
+If no output file is specified, output goes to "new_<infile>".
+

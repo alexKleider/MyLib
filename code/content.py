@@ -260,12 +260,20 @@ content_keys = set(content_types.keys())
 
 printers = dict(
     # tuples in the case of envelope windows.
-    X6505_e9=dict(  # Smaller envelope.  #9: 3-7/8 x 8-7/8"
         # e1: envelope with distances (in mm) from top to
         # top of top window       21
         # bottom of top window    43
         # top of lower window     59
         # bottom of lower window  84
+    HL8260W_e10=dict(  # large envelopes, Bolinas Data Closet
+        indent=4,
+        top=4,  # blank lines at top
+        frm=(4, 35),  # return window
+        date=5,  # between windows
+        to=(5, 29),  # recipient window
+        re=4,  # below windows => fold
+        ), # 3+4+5+5+4 = 21
+    X6505_e9=dict(  # Smaller envelope.  #9: 3-7/8 x 8-7/8"
         indent=5,
         top=4,  # blank lines at top  1 ..2
         frm=(4, 25),  # return window 3..6

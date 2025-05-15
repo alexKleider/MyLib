@@ -15,6 +15,7 @@ Optional second parameter can be
 If an output file is not specified, output will go
 to "new_<1stParam>".
 
+Usage: $ ./indent.py infile [spaces2indent] outfile
 """
 
 import os
@@ -23,23 +24,26 @@ import sys
 INDENT = 6
 
 # Set up defaults:
-outfile = ''
+outfile = None
 indent = 0
 args = sys.argv
 arglen = len(args)
+print(f"{arglen=}")
 if not arglen > 1:
-    print("Usage:  indent.py file_name [spaces2indent] [outfile]")
+    print("Usage:  indent.py infile [spaces2indent] [outfile]")
+    print("At the very least, an input file must be specified!")
     sys.exit()
 infile = args[1]
-if arglen > 2:
+if arglen >2:
+    print("3 or more args")
     try:
         indent = int(args[2])
     except ValueError:
         outfile = args[2]
+if arglen == 4:
+    outfile = args[3]
+
 if not outfile:
-    try:
-        outfile = args[-1]
-    except OutOfRangeError:
         root, fname = os.path.split(infile)
         outfile = os.path.join(root, "new_{}".format(fname))
 if not indent:
